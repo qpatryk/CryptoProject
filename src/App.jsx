@@ -6,7 +6,6 @@ import Pagination from './components/Pagination';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import ReactSelect from 'react-select';
 import Chart from 'react-chartjs-2';
-import Charts from './components/Charts'; // Import komponentu Charts
 import './App.css';
 
 const API_URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100';
@@ -18,18 +17,6 @@ function App() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortBy, setSortBy] = useState('market_cap_desc');
   const [filters, setFilters] = useState({ type: 'all' });
-
-  const data = { // Przygotowanie danych dla wykresu
-    labels: ['1 dzień temu', '2 dni temu', '3 dni temu', '4 dni temu', '5 dni temu'],
-    datasets: [
-      {
-        label: 'Cena Bitcoina',
-        data: [10000, 9500, 9800, 10200, 10500], // Przykładowe dane, zastąp je prawdziwymi
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-      },
-    ],
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,45 +72,30 @@ function App() {
                   <CoinCard coin={coin} />
                 </SortableElement>
               ))}
+          </SortableContainer>
+          <Pagination page={page} setPage={setPage} totalPages={Math.ceil(filteredCoins.length / itemsPerPage)} />
+        </section>
 
+        <section className="filters">
+          <ReactSelect
+            options={[
+              { value: 'all', label: 'Wszystkie' },
+              { value: 'bitcoin', label: 'Bitcoin' },
+              { value: 'ethereum', label: 'Ethereum' },
+              { value: 'tether', label: 'Tether' },
+              { value: 'binance-coin', label: 'Binance Coin' },
+            ]}
+            value={filters.type}
+            onChange={(newValue) => setFilters({ ...filters, type: newValue.value })}
+          />
+        </section>
 
-
-//przykładowe dane do wykresu (należy je zastąpić prawdziwymi danymi)
-
-
-
-/*import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+        <section className="charts">
+          <Chart type="line" data={{ ... }} />
+        </section>
+      </main>
     </>
-  )
+  );
 }
 
-
+export default App;
