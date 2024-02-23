@@ -1,30 +1,33 @@
-import { CoinGeckoClient } from 'coingecko-api-v3';
+// App.jsx
+// ... other imports
 
-const client = new CoinGeckoClient({
-    ws: true, // enable websocket
-});
+function App() {
+    const [coins, setCoins] = useState([]);
+    // ... other state variables
 
-const getCoins = () => {
-    return new Promise((resolve, reject) => {
-        client.ws.subscribe('global', {
-            pingInterval: 10000,
-            reconnect: {
-                auto: true,
-                delay: 5000,
-                maxAttempts: 15
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const coinData = await getCoins();
+                setCoins(coinData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                // Optionally, you could set an error state and display a message to the user
             }
-        });
+        };
 
-        client.ws.on('message', (data) => {
-            if (data.type === 'global') {
-                resolve(data.data.coins);
-            }
-        });
+        fetchData();
+        // Since getCoins sets up a WebSocket subscription, you may not need to poll with setInterval
+        // However, if you do need to set up an interval for any reason, you can uncomment the following lines:
+        // const interval = setInterval(fetchData, 10000);
+        // return () => clearInterval(interval);
+    }, []);
 
-        client.ws.on('error', (error) => {
-            reject(error);
-        });
-    });
+    // ... rest of the component
+
+    return (
+        // ... JSX markup
+    );
 }
 
-export default getCoins;
+export default App;
